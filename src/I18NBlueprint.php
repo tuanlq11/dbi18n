@@ -14,6 +14,7 @@ use Illuminate\Database\Schema\Grammars\Grammar;
 class I18NBlueprint extends Blueprint
 {
     public    $i18n_table   = null;
+    protected $i18n_columns = [];
     protected $i18n_primary = [];
 
     /**
@@ -55,6 +56,7 @@ class I18NBlueprint extends Blueprint
      */
     public function primary($columns, $name = null)
     {
+        $columns = (array)$columns;
         foreach ($columns as $column) {
             foreach ($this->columns as $regCol) {
                 if ($regCol->get('name') === $column) {
@@ -74,24 +76,60 @@ class I18NBlueprint extends Blueprint
         if ($command === "drop") {
             $schema->dropIfExists($this->getI18NTableName());
         }
-        
+
         parent::build($connection, $grammar);
 
         if ($command === "create") {
-            $primary = $this->i18n_primary;
-            $schema->create($this->getI18NTableName(), function (Blueprint $table) use ($primary) {
+            $primary      = $this->i18n_primary;
+            $i18n_columns = $this->i18n_columns;
+            $schema->create($this->getI18NTableName(), function (Blueprint $table) use ($primary, $i18n_columns) {
                 foreach ($primary as $name => $col) {
                     $table->columns[] = $col;
                 }
 
-                $table->primary(array_keys($primary));
+                foreach ($i18n_columns as $col) {
+                    $table->columns[] = $col;
+                }
+
+                $table->string('lang_code', 10);
+                $table->primary(array_merge(array_keys($primary), ['lang_code']));
             });
         }
     }
 
 
-    public function i18n()
+    /**
+     * Add i18n text field
+     * @param $name
+     * @return \Illuminate\Support\Fluent
+     */
+    public function i18n_text($name)
     {
+        $this->i18n_columns[] = $column = $this->text($name);
+        return $column;
+    }
 
+    /**
+     * Add i18n string field
+     * @param $name
+     * @param int $length
+     * @return \Illuminate\Support\Fluent
+     */
+    public function i18n_string($name, $length = 255)
+    {
+        $this->i18n_columns[] = $column = $this->string($name, $length);
+        return $column;
+    }
+
+    /**
+     * Add i18n char field
+     * @param $name
+     * @param int $length
+     * @return \Illuminate\Support\Fluent
+     */
+    public function i18n_char($name, $length = 255)
+    {
+        $this->i18n_columns[] = $column = $this->char($name, $length);
+        return $column;
     }
 }

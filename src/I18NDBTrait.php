@@ -17,9 +17,62 @@ use Psy\Util\Str;
  */
 trait I18NDBTrait
 {
-    public function bootI18NDBTrait()
+    protected $i18n_attribute_name = "i18n";
+    protected $default_locale      = "en";
+    /**
+     * Store i18n data, before save
+     * @var array
+     */
+    protected $i18n_columns_data = [];
+
+    /**
+     * I18NDBTrait constructor.
+     */
+    public function __construct()
     {
-        /** TODO: Nothing */
+        $this->saving(function ($model) {
+            $model->filterI18NColumn();
+        });
+
+        $this->saved(function ($model) {
+            $model->saveI18N();
+        });
+    }
+
+    /**
+     * Add i18n data to variable
+     * @param $data
+     * @param $locale
+     */
+    public function addI18NData($data, $locale)
+    {
+        $this->i18n_columns_data[$locale] = $data;
+    }
+
+    /**
+     * Store I18N to database
+     */
+    public function saveI18N()
+    {
+        if (empty($this->i18n_columns_data)) return;
+        foreach ($this->i18n_columns_data as $locale => $data) {
+            $obj                             = $this->i18n_relation()->getQuery()->where($this->getI18NCodeField(), $locale)->firstOrNew($data);
+            $data[$this->i18n_primary]       = $this->id;
+            $data[$this->getI18NCodeField()] = $locale;
+            $obj->fill($data);
+            $obj->save();
+        }
+    }
+
+    /**
+     * Filter & remove i18n column from attributes.
+     * Mean, is not save to model self.
+     */
+    public function filterI18NColumn()
+    {
+        if (!isset($this->attributes[$this->i18n_attribute_name])) return;
+        $this->i18n_columns_data = $this->attributes[$this->i18n_attribute_name];
+        unset($this->attributes[$this->i18n_attribute_name]);
     }
 
     /**
@@ -27,7 +80,7 @@ trait I18NDBTrait
      */
     public function i18n_relation()
     {
-        return $this->hasMany($this->i18n_class, $this->primaryKey, $this->primaryKey);
+        return $this->hasMany($this->i18n_class, $this->i18n_primary, $this->primaryKey);
     }
 
     /**

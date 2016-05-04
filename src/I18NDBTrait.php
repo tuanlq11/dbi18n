@@ -14,6 +14,14 @@ class I18NDBTrait extends Model
     protected $i18n_columns = [];
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function i18n_relation()
+    {
+        return $this->hasMany($this->getI18NTableName(), $this->primaryKey, $this->primaryKey);
+    }
+
+    /**
      * @return null|string
      */
     public function getI18NTableName()
@@ -33,10 +41,8 @@ class I18NDBTrait extends Model
 //        $relation = $this->hasMany()
 //    }
 //
-//    public function bootI18NDBTrait()
-//    {
-//        foreach ($this->i18n_columns as $column) {
-//            $this->attac
-//        }
-//    }
+    public function bootI18NDBTrait()
+    {
+        $this->addGlobalScope(new I18NScope());
+    }
 }

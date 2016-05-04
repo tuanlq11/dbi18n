@@ -66,7 +66,11 @@ class I18NBlueprint extends Blueprint
         return parent::primary($columns, $name);
     }
 
-
+    /**
+     * Overrride build function
+     * @param Connection $connection
+     * @param Grammar $grammar
+     */
     public function build(Connection $connection, Grammar $grammar)
     {
         $command = $this->parseCommand($this->commands[0]->get('name'));
@@ -99,6 +103,13 @@ class I18NBlueprint extends Blueprint
         }
     }
 
+    /**
+     * Create column fluent
+     * @param $name
+     * @param $type
+     * @param array $parameters
+     * @return Fluent
+     */
     protected function createColumn($name, $type, array $parameters = [])
     {
         $attributes = array_merge(compact('type', 'name'), $parameters);

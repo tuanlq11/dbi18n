@@ -15,7 +15,7 @@
   },
   "autoload": {
     "psr-4": {
-      "tuanlq11\\i18n\\": "src/"
+      "tuanlq11\\dbi18n\\": "src/"
     }
   }
 }

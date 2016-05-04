@@ -103,7 +103,7 @@ class I18NBlueprint extends Blueprint
     {
         $attributes = array_merge(compact('type', 'name'), $parameters);
 
-        $this->columns[] = $column = new Fluent($attributes);
+        $column = new Fluent($attributes);
 
         return $column;
     }

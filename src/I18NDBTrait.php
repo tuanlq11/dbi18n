@@ -55,12 +55,12 @@ trait I18NDBTrait
     public function saveI18N()
     {
         if (empty($this->i18n_columns_data)) return;
+        $this->i18n_relation()->getQuery()->whereIn($this->getI18NCodeField(), array_keys($this->i18n_columns_data))->delete();
         foreach ($this->i18n_columns_data as $locale => $data) {
-            $obj                             = $this->i18n_relation()->getQuery()->where($this->getI18NCodeField(), $locale)->firstOrNew($data);
+            $obj                             = new $this->i18n_class();
             $data[$this->i18n_primary]       = $this->id;
             $data[$this->getI18NCodeField()] = $locale;
-            $obj->fill($data);
-            $obj->save();
+            $obj->create($data);
         }
     }
 

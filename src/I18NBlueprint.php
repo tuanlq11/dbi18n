@@ -98,6 +98,14 @@ class I18NBlueprint extends Blueprint
         }
     }
 
+    protected function createColumn($name, $type, array $parameters = [])
+    {
+        $attributes = array_merge(compact('type', 'name'), $parameters);
+
+        $this->columns[] = $column = new Fluent($attributes);
+
+        return $column;
+    }
 
     /**
      * Add i18n text field
@@ -106,7 +114,7 @@ class I18NBlueprint extends Blueprint
      */
     public function i18n_text($name)
     {
-        $this->i18n_columns[] = $column = $this->text($name);
+        $this->i18n_columns[] = $column = $this->createColumn($name, 'text');
         return $column;
     }
 
@@ -118,7 +126,7 @@ class I18NBlueprint extends Blueprint
      */
     public function i18n_string($name, $length = 255)
     {
-        $this->i18n_columns[] = $column = $this->string($name, $length);
+        $this->i18n_columns[] = $column = $this->createColumn($name, 'string', compact('length'));
         return $column;
     }
 
@@ -130,7 +138,7 @@ class I18NBlueprint extends Blueprint
      */
     public function i18n_char($name, $length = 255)
     {
-        $this->i18n_columns[] = $column = $this->char($name, $length);
+        $this->i18n_columns[] = $column = $this->createColumn($name, 'char', compact('length'));
         return $column;
     }
 }

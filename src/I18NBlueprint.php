@@ -4,6 +4,7 @@ namespace tuanlq11\dbi18n;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Grammars\Grammar;
+use Illuminate\Support\Fluent;
 
 /**
  * Created by Fallen.

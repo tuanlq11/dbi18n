@@ -1,0 +1,21 @@
+{
+  "name": "tuanlq11/dbi18n",
+  "description": "Support Database Multi-Language",
+  "license": "MIT",
+  "minimum-stability": "stable",
+  "authors": [
+    {
+      "name": "Fallen",
+      "email": "tuanlq.it@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0",
+    "laravel/framework": ">=5.1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "tuanlq11\\i18n\\": "src/"
+    }
+  }
+}

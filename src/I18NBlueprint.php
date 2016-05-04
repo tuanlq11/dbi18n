@@ -10,9 +10,10 @@ use Illuminate\Database\Schema\Grammars\Grammar;
  */
 class I18NBlueprint extends Blueprint
 {
-    public    $i18n_table   = null;
-    protected $i18n_columns = [];
-    protected $i18n_primary = [];
+    public    $i18n_table      = null;
+    public    $i18n_code_field = "locale";
+    protected $i18n_columns    = [];
+    protected $i18n_primary    = [];
 
     /**
      * Parse origin command to human command
@@ -91,8 +92,8 @@ class I18NBlueprint extends Blueprint
                     $table->columns[] = $col;
                 }
 
-                $table->string('lang_code', 10);
-                $table->primary(array_merge(array_keys($primary), ['lang_code']));
+                $table->string($this->i18n_code_field, 10);
+                $table->primary(array_merge(array_keys($primary), [$this->i18n_code_field]));
             });
         }
     }

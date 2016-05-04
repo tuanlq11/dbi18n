@@ -6,10 +6,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Grammars\Grammar;
 
 /**
- * Created by PhpStorm.
- * User: arch
- * Date: 5/4/16
- * Time: 7:20 AM
+ * Created by Fallen.
  */
 class I18NBlueprint extends Blueprint
 {
@@ -82,9 +79,12 @@ class I18NBlueprint extends Blueprint
         if ($command === "create") {
             $primary      = $this->i18n_primary;
             $i18n_columns = $this->i18n_columns;
-            $schema->create($this->getI18NTableName(), function (Blueprint $table) use ($primary, $i18n_columns) {
+            $table_name   = $this->table;
+            $schema->create($this->getI18NTableName(), function (Blueprint $table) use ($table_name, $primary, $i18n_columns) {
                 foreach ($primary as $name => $col) {
                     $table->columns[] = $col;
+
+                    $table->foreign($col->get('name'))->references($col->get('name'))->on($table_name)->onDelete('cascade');
                 }
 
                 foreach ($i18n_columns as $col) {

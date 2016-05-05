@@ -131,8 +131,6 @@ trait I18NDBTrait
             $query->leftJoin("{$this->i18n_table} as {$i18nAlias}", "{$i18nAlias}.{$i18nPrimary}", "=", "{$table}.{$primary}");
         }
 
-        $query->addSelect('');
-
         return $query;
     }
 }

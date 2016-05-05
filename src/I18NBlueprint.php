@@ -48,6 +48,24 @@ class I18NBlueprint extends Blueprint
     }
 
     /**
+     * @param $columns
+     */
+    protected function addCachePrimary($columns)
+    {
+        $columns = (array)$columns;
+        foreach ($columns as $column) {
+            /** @var Fluent $registerColumn */
+            foreach ($this->columns as $registerColumn) {
+                $newCol = clone  $registerColumn;
+                if ($newCol->get('name') === $column) {
+                    if ($newCol->__isset('autoIncrement')) $newCol->__unset('autoIncrement');
+                    $this->i18n_primary[$column] = $newCol;
+                }
+            }
+        }
+    }
+
+    /**
      * Store list primary to create i18n
      * @param array|string $columns
      * @param null $name
@@ -55,15 +73,30 @@ class I18NBlueprint extends Blueprint
      */
     public function primary($columns, $name = null)
     {
-        $columns = (array)$columns;
-        foreach ($columns as $column) {
-            foreach ($this->columns as $regCol) {
-                if ($regCol->get('name') === $column) {
-                    $this->i18n_primary[$column] = $regCol;
-                }
-            }
-        }
+        $this->addCachePrimary($columns);
         return parent::primary($columns, $name);
+    }
+
+    /**
+     * @param string $column
+     * @return Fluent
+     */
+    public function increments($column)
+    {
+        $result = parent::increments($column);
+        $this->addCachePrimary($column);
+        return $result;
+    }
+
+    /**
+     * @param string $column
+     * @return Fluent
+     */
+    public function bigIncrements($column)
+    {
+        $result = parent::bigIncrements($column);
+        $this->addCachePrimary($column);
+        return $result;
     }
 
     /**

@@ -2,11 +2,12 @@
 namespace tuanlq11\dbi18n;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Created by Fallen.
  */
-trait I18NDBTrait
+abstract class I18NDB extends Model
 {
     public static $I18N = true;
 
@@ -30,9 +31,9 @@ trait I18NDBTrait
     private $i18n_data = [];
 
     /**
-     * Boot Init Event Handler for Trait
+     * Boot Handler
      */
-    public static function bootI18NDBTrait()
+    protected static function boot()
     {
         self::saving(function ($model) {
             $model->filterI18NColumn();
@@ -41,6 +42,8 @@ trait I18NDBTrait
         self::saved(function ($model) {
             $model->saveI18N();
         });
+
+        parent::boot();
     }
 
     /**

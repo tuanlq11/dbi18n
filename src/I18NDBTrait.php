@@ -2,37 +2,38 @@
 namespace tuanlq11\dbi18n;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use Psy\Util\Str;
 
 /**
  * Created by Fallen.
- *
- * @property string primaryKey
- * @property string table
- * @property string i18n_primary
- * @property string i18n_code_field
- * @property string i18n_table
- * @property string i18n_columns
  */
 trait I18NDBTrait
 {
-    public static $I18N                = true;
-    protected     $i18n_attribute_name = "i18n";
-    protected     $default_locale      = "en";
+    public static $I18N = true;
+
+    /** @var string */
+    protected $i18n_attribute_name = "i18n";
+    /** @var string */
+    protected $i18n_default_locale = "en";
+    /** @var string */
+    protected $i18n_primary = "id";
+    /** @var null|string */
+    protected $i18n_class = null;
+    /** @var string */
+    protected $i18n_field = "locale";
+    /** @var array */
+    protected $i18n_fillable = [];
+
     /**
      * Store i18n data, before save
      * @var array
      */
-    protected $i18n_columns_data = [];
+    private $i18n_data = [];
 
     /**
      * Boot Init Event Handler for Trait
      */
     public static function bootI18NDBTrait()
     {
-
         self::saving(function ($model) {
             $model->filterI18NColumn();
         });
@@ -49,7 +50,7 @@ trait I18NDBTrait
      */
     public function addI18NData($data, $locale)
     {
-        $this->i18n_columns_data[$locale] = $data;
+        $this->i18n_data[$locale] = $data;
     }
 
     /**
@@ -57,9 +58,9 @@ trait I18NDBTrait
      */
     public function saveI18N()
     {
-        if (empty($this->i18n_columns_data)) return;
-        $this->i18n_relation()->getQuery()->whereIn($this->getI18NCodeField(), array_keys($this->i18n_columns_data))->delete();
-        foreach ($this->i18n_columns_data as $locale => $data) {
+        if (empty($this->i18n_data)) return;
+        $this->i18n_relation()->getQuery()->whereIn($this->getI18NCodeField(), array_keys($this->i18n_data))->delete();
+        foreach ($this->i18n_data as $locale => $data) {
             $obj                             = new $this->i18n_class();
             $data[$this->i18n_primary]       = $this->id;
             $data[$this->getI18NCodeField()] = $locale;
@@ -73,9 +74,13 @@ trait I18NDBTrait
      */
     public function filterI18NColumn()
     {
-        if (!isset($this->attributes[$this->i18n_attribute_name])) return;
-        $this->i18n_columns_data = $this->attributes[$this->i18n_attribute_name];
-        unset($this->attributes[$this->i18n_attribute_name]);
+        $overrideData                                = array_only($this->attributes, $this->i18n_fillable);
+        $this->i18n_data[$this->i18n_default_locale] = $overrideData;
+
+        if (isset($this->attributes[$this->i18n_attribute_name])) {
+            $this->i18n_data = $this->attributes[$this->i18n_attribute_name];
+            unset($this->attributes[$this->i18n_attribute_name]);
+        }
     }
 
     /**
@@ -91,11 +96,7 @@ trait I18NDBTrait
      */
     public function getI18NTableName()
     {
-        if ($this->i18n_table) return $this->i18n_table;
-
-        $this->i18n_table = $table = sprintf("%s_i18n", $this->table);
-
-        return $table;
+        return (new $this->i18n_class())->getTable();
     }
 
     /**
@@ -108,6 +109,8 @@ trait I18NDBTrait
     }
 
     /**
+     * Join I18N data to this
+     *
      * @param $query Builder
      * @param $locale string|null
      * @return  Builder
@@ -119,19 +122,20 @@ trait I18NDBTrait
         $primary       = $this->primaryKey;
         $i18nPrimary   = $this->i18n_primary;
         $table         = $this->table;
+        $i18n_table    = (new $this->i18n_class())->getTable();
 
         if ($locale) {
             $query->leftJoin(\DB::raw("
             (
                 SELECT {$i18nTranAlias}.*
-                FROM {$this->i18n_table} as {$i18nTranAlias}
+                FROM {$i18n_table} as {$i18nTranAlias}
                 WHERE {$i18nTranAlias}.{$this->getI18NCodeField()} = '{$locale}'
             ) as {$i18nAlias}"
             ), function ($join) use ($i18nAlias, $primary, $i18nPrimary, $table) {
                 $join->on("{$i18nAlias}.{$i18nPrimary}", "=", "{$table}.{$primary}");
             });
         } else {
-            $query->leftJoin("{$this->i18n_table} as {$i18nAlias}", "{$i18nAlias}.{$i18nPrimary}", "=", "{$table}.{$primary}");
+            $query->leftJoin("{$i18n_table} as {$i18nAlias}", "{$i18nAlias}.{$i18nPrimary}", "=", "{$table}.{$primary}");
         }
 
         return $query;

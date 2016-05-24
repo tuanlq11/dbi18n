@@ -8,6 +8,7 @@ use Psy\Util\Str;
 
 /**
  * Created by Fallen.
+ *
  * @property string primaryKey
  * @property string table
  * @property string i18n_primary
@@ -17,8 +18,9 @@ use Psy\Util\Str;
  */
 trait I18NDBTrait
 {
-    protected $i18n_attribute_name = "i18n";
-    protected $default_locale      = "en";
+    public static $I18N                = true;
+    protected     $i18n_attribute_name = "i18n";
+    protected     $default_locale      = "en";
     /**
      * Store i18n data, before save
      * @var array
@@ -27,9 +29,12 @@ trait I18NDBTrait
 
     /**
      * I18NDBTrait constructor.
+     * @var $attributes array
      */
-    public function __construct()
+    public function __construct($attributes = [])
     {
+        parent::__construct();
+
         $this->saving(function ($model) {
             $model->filterI18NColumn();
         });

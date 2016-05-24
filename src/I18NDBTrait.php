@@ -11,17 +11,17 @@ trait I18NDBTrait
     public static $I18N = true;
 
     /** @var string */
-    public $i18n_attribute_name = "i18n";
+    // protected $i18n_attribute_name = "i18n";
     /** @var string */
-    public $i18n_default_locale = "en";
+    // protected $i18n_default_locale = "en";
     /** @var string */
-    public $i18n_primary = "id";
+    // protected $i18n_primary = "id";
     /** @var null|string */
-    public $i18n_class = null;
+    // protected $i18n_class = null;
     /** @var string */
-    public $i18n_field = "locale";
+    // protected $i18n_field = "locale";
     /** @var array */
-    public $i18n_fillable = [];
+    // protected $i18n_fillable = [];
 
     /**
      * Store i18n data, before save

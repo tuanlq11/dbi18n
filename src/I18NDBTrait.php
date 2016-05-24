@@ -2,27 +2,26 @@
 namespace tuanlq11\dbi18n;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * Created by Fallen.
  */
-abstract class I18NDB extends Model
+trait I18NDBTrait
 {
     public static $I18N = true;
 
     /** @var string */
-    protected $i18n_attribute_name = "i18n";
+    public $i18n_attribute_name = "i18n";
     /** @var string */
-    protected $i18n_default_locale = "en";
+    public $i18n_default_locale = "en";
     /** @var string */
-    protected $i18n_primary = "id";
+    public $i18n_primary = "id";
     /** @var null|string */
-    protected $i18n_class = null;
+    public $i18n_class = null;
     /** @var string */
-    protected $i18n_field = "locale";
+    public $i18n_field = "locale";
     /** @var array */
-    protected $i18n_fillable = [];
+    public $i18n_fillable = [];
 
     /**
      * Store i18n data, before save
@@ -33,7 +32,7 @@ abstract class I18NDB extends Model
     /**
      * Boot Handler
      */
-    protected static function boot()
+    public static function bootI18NDBTrait()
     {
         self::saving(function ($model) {
             $model->filterI18NColumn();
@@ -42,8 +41,6 @@ abstract class I18NDB extends Model
         self::saved(function ($model) {
             $model->saveI18N();
         });
-
-        parent::boot();
     }
 
     /**

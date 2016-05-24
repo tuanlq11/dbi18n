@@ -74,8 +74,13 @@ trait I18NDBTrait
      */
     public function filterI18NColumn()
     {
-        $overrideData                                = array_only($this->attributes, $this->i18n_fillable);
-        $this->i18n_data[$this->i18n_default_locale] = $overrideData;
+        $overrideData = array_only($this->attributes, $this->i18n_fillable);
+        if (!empty($overrideData)) {
+            $this->i18n_data[$this->i18n_default_locale] = $overrideData;
+            foreach ($this->i18n_fillable as $key) {
+                unset($this->$key);
+            }
+        }
 
         if (isset($this->attributes[$this->i18n_attribute_name])) {
             $this->i18n_data = $this->attributes[$this->i18n_attribute_name];

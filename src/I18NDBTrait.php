@@ -28,18 +28,16 @@ trait I18NDBTrait
     protected $i18n_columns_data = [];
 
     /**
-     * I18NDBTrait constructor.
-     * @var $attributes array
+     * Boot Init Event Handler for Trait
      */
-    public function __construct($attributes = [])
+    public static function bootI18NDBTrait()
     {
-        parent::__construct();
 
-        $this->saving(function ($model) {
+        self::saving(function ($model) {
             $model->filterI18NColumn();
         });
 
-        $this->saved(function ($model) {
+        self::saved(function ($model) {
             $model->saveI18N();
         });
     }

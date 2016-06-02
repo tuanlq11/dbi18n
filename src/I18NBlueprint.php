@@ -44,7 +44,7 @@ class I18NBlueprint extends Blueprint
     public function getI18NTableName()
     {
         if ($this->i18n_table) return $this->i18n_table;
-        return sprintf("%s_i18n", $this->table);
+        return sprintf("%s_i18ns", $this->table);
     }
 
     /**

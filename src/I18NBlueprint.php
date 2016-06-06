@@ -18,7 +18,9 @@ class I18NBlueprint extends Blueprint
 
     /**
      * Parse origin command to human command
+     *
      * @param $originCommand
+     *
      * @return int|null|string
      */
     public function parseCommand($originCommand)
@@ -39,11 +41,13 @@ class I18NBlueprint extends Blueprint
 
     /**
      * Return i18n table name
+     *
      * @return null
      */
     public function getI18NTableName()
     {
         if ($this->i18n_table) return $this->i18n_table;
+
         return sprintf("%s_i18ns", $this->table);
     }
 
@@ -67,42 +71,50 @@ class I18NBlueprint extends Blueprint
 
     /**
      * Store list primary to create i18n
+     *
      * @param array|string $columns
-     * @param null $name
+     * @param null         $name
+     *
      * @return \Illuminate\Support\Fluent
      */
     public function primary($columns, $name = null)
     {
         $this->addCachePrimary($columns);
+
         return parent::primary($columns, $name);
     }
 
     /**
      * @param string $column
+     *
      * @return Fluent
      */
     public function increments($column)
     {
         $result = parent::increments($column);
         $this->addCachePrimary($column);
+
         return $result;
     }
 
     /**
      * @param string $column
+     *
      * @return Fluent
      */
     public function bigIncrements($column)
     {
         $result = parent::bigIncrements($column);
         $this->addCachePrimary($column);
+
         return $result;
     }
 
     /**
      * Overrride build function
+     *
      * @param Connection $connection
-     * @param Grammar $grammar
+     * @param Grammar    $grammar
      */
     public function build(Connection $connection, Grammar $grammar)
     {
@@ -138,9 +150,11 @@ class I18NBlueprint extends Blueprint
 
     /**
      * Create column fluent
-     * @param $name
-     * @param $type
+     *
+     * @param       $name
+     * @param       $type
      * @param array $parameters
+     *
      * @return Fluent
      */
     protected function createColumn($name, $type, array $parameters = [])
@@ -153,37 +167,60 @@ class I18NBlueprint extends Blueprint
     }
 
     /**
+     * @param string $type
+     * @param string $name
+     * @param array  $parameters
+     *
+     * @return Fluent
+     */
+    public function addColumn($type, $name, array $parameters = [])
+    {
+        $this->i18n_columns[] = $column = parent::addColumn($type, $name, $parameters);
+
+        return $column;
+    }
+
+    /**
      * Add i18n text field
+     *
      * @param $name
+     *
      * @return \Illuminate\Support\Fluent
      */
     public function i18n_text($name)
     {
         $this->i18n_columns[] = $column = $this->createColumn($name, 'text');
+
         return $column;
     }
 
     /**
      * Add i18n string field
-     * @param $name
+     *
+     * @param     $name
      * @param int $length
+     *
      * @return \Illuminate\Support\Fluent
      */
     public function i18n_string($name, $length = 255)
     {
         $this->i18n_columns[] = $column = $this->createColumn($name, 'string', compact('length'));
+
         return $column;
     }
 
     /**
      * Add i18n char field
-     * @param $name
+     *
+     * @param     $name
      * @param int $length
+     *
      * @return \Illuminate\Support\Fluent
      */
     public function i18n_char($name, $length = 255)
     {
         $this->i18n_columns[] = $column = $this->createColumn($name, 'char', compact('length'));
+
         return $column;
     }
 }

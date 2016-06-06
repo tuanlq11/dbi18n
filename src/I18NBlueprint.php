@@ -173,7 +173,7 @@ class I18NBlueprint extends Blueprint
      *
      * @return Fluent
      */
-    public function addColumn($type, $name, array $parameters = [])
+    public function addI18NColumn($type, $name, array $parameters = [])
     {
         $this->i18n_columns[] = $column = parent::addColumn($type, $name, $parameters);
 

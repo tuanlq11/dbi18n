@@ -15,20 +15,24 @@ use Psy\Util\Str;
  * @property string i18n_code_field
  * @property string i18n_table
  * @property string i18n_columns
+ * @property string i18n_attribute_name
+ * @property string default_locale
  */
 trait I18NDBTrait
 {
-    public static $I18N                = true;
-    protected     $i18n_attribute_name = "i18n";
-    protected     $default_locale      = "en";
+    public static $I18N = true;
+    // protected     $i18n_attribute_name = "i18n";
+    // protected     $default_locale      = "en";
     /**
      * Store i18n data, before save
+     *
      * @var array
      */
     protected $i18n_columns_data = [];
 
     /**
      * I18NDBTrait constructor.
+     *
      * @var $attributes array
      */
     public function __construct($attributes = [])
@@ -46,6 +50,7 @@ trait I18NDBTrait
 
     /**
      * Add i18n data to variable
+     *
      * @param $data
      * @param $locale
      */
@@ -102,6 +107,7 @@ trait I18NDBTrait
 
     /**
      * Return column name of i18n code
+     *
      * @return string
      */
     protected function getI18NCodeField()
@@ -110,8 +116,9 @@ trait I18NDBTrait
     }
 
     /**
-     * @param $query Builder
+     * @param $query  Builder
      * @param $locale string|null
+     *
      * @return  Builder
      */
     public function scopeI18N($query, $locale = null)
